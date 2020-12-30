@@ -21,6 +21,14 @@ public struct AppleMusicSearchResult: Decodable {
     //public let stations: [StationResponse]
 }
 
+struct AppleMusicSearchHintsResponse: Decodable {
+    let results: AppleMusicSearchHints
+}
+
+public struct AppleMusicSearchHints: Decodable {
+    public let terms: [String]
+}
+
 public struct AppleMusicDataResponse<T: Decodable>: Decodable {
     public let data: [T]
     public let next: String?

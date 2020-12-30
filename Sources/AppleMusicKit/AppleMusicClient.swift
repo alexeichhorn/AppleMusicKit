@@ -118,6 +118,24 @@ public class AppleMusicClient {
         })
     }
     
+    /// - returns: array of strings meant as search suggestions for given query
+    public func searchHints(_ query: String, limit: Int = 10, types: [SearchType]? = nil, completion: @escaping Completion<AppleMusicSearchHints>) {
+        
+        var query = [
+            URLQueryItem(name: "term", value: query),
+            URLQueryItem(name: "limit", value: "\(limit)")
+        ]
+        
+        if let types = types {
+            let encodedTypes = types.map { $0.rawValue }.joined(separator: ",")
+            query.append(URLQueryItem(name: "types", value: encodedTypes))
+        }
+        
+        getDecodable(AppleMusicSearchHintsResponse.self, path: "/catalog/\(storefront.rawValue)/search/hints", query: query) { response in
+            completion(response.map { $0.results })
+        }
+    }
+    
     
     // MARK: - Song
     
