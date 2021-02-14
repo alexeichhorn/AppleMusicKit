@@ -153,6 +153,21 @@ public class AppleMusicClient {
         }
     }
     
+    public func getSong(withISRC isrc: String, includeTypes: [RelationshipType] = [], completion: @escaping Completion<AppleMusicSong>) {
+        
+        let encodedIncludeTypes = includeTypes.map { $0.rawValue }.joined(separator: ",")
+        
+        getDecodable(AppleMusicDataResponse<AppleMusicSong>.self, path: "/catalog/\(storefront.rawValue)/songs", query: [
+            URLQueryItem(name: "include", value: encodedIncludeTypes),
+            URLQueryItem(name: "filter[isrc]", value: isrc)
+        ]) { result in
+            completion(result.flatMap {
+                guard let song = $0.data.first else { return .failure(RequestError.notFound) }
+                return .success(song)
+            })
+        }
+    }
+    
     /// load missing relationship data
     public func getSongDetails(for song: AppleMusicSong, types: [RelationshipType], completion: @escaping Completion<AppleMusicSong>) {
         getSong(withID: song.id, includeTypes: types, completion: completion)
