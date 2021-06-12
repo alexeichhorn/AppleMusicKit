@@ -23,9 +23,10 @@ public struct AppleMusicAlbum: Decodable {
         public let isComplete: Bool
         public let isSingle: Bool
         public let name: String
-        public let recordLabel: String
+        public let recordLabel: String?
         public let releaseDate: String
         public let trackCount: Int
+        public let upc: String?
     }
     
     public struct Relationships: Decodable {
