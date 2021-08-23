@@ -23,7 +23,17 @@ public struct AppleMusicEditorialNotes: Decodable {
     
 }
 
+public struct AppleMusicDescriptionAttribute: Decodable {
+    let short: String?
+    let standard: String
+}
+
 public enum AppleMusicContentRating: String, Decodable {
     case clean
     case explicit
+}
+
+public enum AppleMusicTrackTypes: String, Decodable {
+    case musicVideos = "music-videos"
+    case songs
 }

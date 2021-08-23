@@ -16,7 +16,7 @@ public struct AppleMusicSearchResult: Decodable {
     public let albums: AppleMusicDataResponse<AppleMusicAlbum>?
     public let artists: AppleMusicDataResponse<AppleMusicArtist>?
     //public let curators: [CuratorResponse]
-    //public let playlists: [PlaylistResponse]
+    public let playlists: AppleMusicDataResponse<AppleMusicPlaylist>?
     public let songs: AppleMusicDataResponse<AppleMusicSong>?
     //public let stations: [StationResponse]
 }
