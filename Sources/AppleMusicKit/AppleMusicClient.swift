@@ -252,6 +252,45 @@ public class AppleMusicClient {
     }
     
     
+    // MARK: - Playlist
+    
+    
+    public func getPlaylist(withID id: String, includeTypes: [RelationshipType] = [], completion: @escaping Completion<AppleMusicPlaylist>) {
+        
+        let encodedIncludeTypes = includeTypes.map { $0.rawValue }.joined(separator: ",")
+        
+        getDecodable(AppleMusicDataResponse<AppleMusicPlaylist>.self, path: "/catalog/\(storefront.rawValue)/playlists/\(id)", query: [
+            URLQueryItem(name: "include", value: encodedIncludeTypes)
+        ]) { result in
+            completion(result.flatMap {
+                if let playlist = $0.data.first {
+                    return .success(playlist)
+                }
+                return .failure(RequestError.notFound)
+            })
+        }
+    }
+    
+    public func getPlaylistRelationship<T: Decodable>(_ relationship: RelationshipType, forID id: String, includes: [RelationshipType] = [], limit: Int = 10, offset: Int = 0, completion: @escaping Completion<AppleMusicDataResponse<T>>) {
+        
+        let encodedIncludes = includes.map { $0.rawValue }.joined(separator: ",")
+        
+        getDecodable(AppleMusicDataResponse<T>.self, path: "/catalog/\(storefront.rawValue)/playlists/\(id)/\(relationship.rawValue)", query: [
+            URLQueryItem(name: "limit", value: "\(limit)"),
+            URLQueryItem(name: "offset", value: "\(offset)"),
+            URLQueryItem(name: "include", value: encodedIncludes)
+        ], completion: completion)
+    }
+    
+    public func getPlaylistTracks(forID id: String, limit: Int = 100, offset: Int = 0, includes: [RelationshipType] = [], completion: @escaping Completion<AppleMusicDataResponse<AppleMusicSong>>) {
+        getPlaylistRelationship(.tracks, forID: id, includes: includes, limit: limit, offset: offset, completion: completion)
+    }
+    
+    public func getPlaylistTracks(for playlist: AppleMusicPlaylist, limit: Int = 100, offset: Int = 0, includes: [RelationshipType] = [], completion: @escaping Completion<AppleMusicDataResponse<AppleMusicSong>>) {
+        getPlaylistTracks(forID: playlist.id, limit: limit, offset: offset, includes: includes, completion: completion)
+    }
+    
+    
     // MARK: - Request Object
     
     public enum SearchType: String {
@@ -266,12 +305,14 @@ public class AppleMusicClient {
         case albums
         case artists
         case station
+        case tracks
         
         var type: Decodable.Type {
             switch self {
             case .songs: return AppleMusicSong.self
             case .albums: return AppleMusicAlbum.self
             case .artists: return AppleMusicArtist.self
+            case .tracks: return AppleMusicSong.self
             case .station: fatalError()
             }
         }
