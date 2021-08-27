@@ -24,8 +24,8 @@ public struct AppleMusicEditorialNotes: Decodable {
 }
 
 public struct AppleMusicDescriptionAttribute: Decodable {
-    let short: String?
-    let standard: String
+    public let short: String?
+    public let standard: String
 }
 
 public enum AppleMusicContentRating: String, Decodable {
