@@ -215,6 +215,21 @@ public class AppleMusicClient {
         getAlbum(withID: album.id, includeTypes: types, completion: completion)
     }
     
+    public func getAlbumTracks(forID id: String, limit: Int = 50, offset: Int = 0, includeTypes: [RelationshipType] = [], completion: @escaping Completion<AppleMusicDataResponse<AppleMusicSong>>) {
+        
+        let encodedIncludeTypes = includeTypes.map { $0.rawValue }.joined(separator: ",")
+        
+        getDecodable(AppleMusicDataResponse<AppleMusicSong>.self, path: "/catalog/\(storefront.rawValue)/albums/\(id)/tracks", query: [
+            URLQueryItem(name: "limit", value: "\(limit)"),
+            URLQueryItem(name: "offset", value: "\(offset)"),
+            URLQueryItem(name: "include", value: "\(encodedIncludeTypes)")
+        ], completion: completion)
+    }
+    
+    public func getAlbumTracks(for album: AppleMusicAlbum, limit: Int = 50, offset: Int = 0, includeTypes: [RelationshipType] = [], completion: @escaping Completion<AppleMusicDataResponse<AppleMusicSong>>) {
+        getAlbumTracks(forID: album.id, limit: limit, offset: offset, includeTypes: includeTypes, completion: completion)
+    }
+    
     
     // MARK: - Artist
     
