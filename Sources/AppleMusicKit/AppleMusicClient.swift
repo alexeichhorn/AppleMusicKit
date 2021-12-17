@@ -100,6 +100,15 @@ public class AppleMusicClient {
             })
         }
     }
+    
+    @available(iOS 13.0, watchOS 6.0, tvOS 13.0, macOS 10.15, *)
+    private func getDecodable<T: Decodable>(_ type: T.Type, path: String, query: [URLQueryItem]) async throws -> T {
+        try await withCheckedThrowingContinuation { continuation in
+            getDecodable(type, path: path, query: query) { result in
+                continuation.resume(with: result)
+            }
+        }
+    }
 
     
     // MARK: - Search
@@ -116,6 +125,15 @@ public class AppleMusicClient {
         ], completion: { response in
             completion(response.map { $0.results })
         })
+    }
+    
+    @available(iOS 13.0, watchOS 6.0, tvOS 13.0, macOS 10.15, *)
+    public func search(_ query: String, limit: Int = 10, offset: Int = 0, types: [SearchType] = [.songs]) async throws -> AppleMusicSearchResult {
+        try await withCheckedThrowingContinuation { continuation in
+            search(query, limit: limit, offset: offset, types: types) { result in
+                continuation.resume(with: result)
+            }
+        }
     }
     
     /// - returns: array of strings meant as search suggestions for given query
@@ -136,6 +154,16 @@ public class AppleMusicClient {
         }
     }
     
+    /// - returns: array of strings meant as search suggestions for given query
+    @available(iOS 13.0, watchOS 6.0, tvOS 13.0, macOS 10.15, *)
+    public func searchHints(_ query: String, limit: Int = 10, types: [SearchType]? = nil) async throws -> AppleMusicSearchHints {
+        try await withCheckedThrowingContinuation { continuation in
+            searchHints(query, limit: limit, types: types) { result in
+                continuation.resume(with: result)
+            }
+        }
+    }
+    
     
     // MARK: - Song
     
@@ -150,6 +178,15 @@ public class AppleMusicClient {
                 guard let song = $0.data.first else { return .failure(RequestError.notFound) }
                 return .success(song)
             })
+        }
+    }
+    
+    @available(iOS 13.0, watchOS 6.0, tvOS 13.0, macOS 10.15, *)
+    public func getSong(withID id: String, includeTypes: [RelationshipType] = []) async throws -> AppleMusicSong {
+        try await withCheckedThrowingContinuation { continuation in
+            getSong(withID: id, includeTypes: includeTypes) { result in
+                continuation.resume(with: result)
+            }
         }
     }
     
@@ -168,9 +205,24 @@ public class AppleMusicClient {
         }
     }
     
+    @available(iOS 13.0, watchOS 6.0, tvOS 13.0, macOS 10.15, *)
+    public func getSong(withISRC isrc: String, includeTypes: [RelationshipType] = []) async throws -> AppleMusicSong {
+        try await withCheckedThrowingContinuation { continuation in
+            getSong(withISRC: isrc, includeTypes: includeTypes) { result in
+                continuation.resume(with: result)
+            }
+        }
+    }
+    
     /// load missing relationship data
     public func getSongDetails(for song: AppleMusicSong, types: [RelationshipType], completion: @escaping Completion<AppleMusicSong>) {
         getSong(withID: song.id, includeTypes: types, completion: completion)
+    }
+    
+    /// load missing relationship data
+    @available(iOS 13.0, watchOS 6.0, tvOS 13.0, macOS 10.15, *)
+    public func getSongDetails(for song: AppleMusicSong, types: [RelationshipType]) async throws -> AppleMusicSong {
+        return try await getSong(withID: song.id, includeTypes: types)
     }
     
     /// - parameter ids: maximum 300 ids accepted
@@ -186,9 +238,26 @@ public class AppleMusicClient {
         }
     }
     
+    /// - parameter ids: maximum 300 ids accepted
+    @available(iOS 13.0, watchOS 6.0, tvOS 13.0, macOS 10.15, *)
+    public func getSongs(withIDs ids: [String], includeTypes: [RelationshipType] = []) async throws -> [AppleMusicSong] {
+        return try await withCheckedThrowingContinuation { continuation in
+            getSongs(withIDs: ids, includeTypes: includeTypes) { result in
+                continuation.resume(with: result)
+            }
+        }
+    }
+    
+    
     /// - parameter ids: maximum 300 songs accepted
     public func getMultipleSongDetails(for songs: [AppleMusicSong], types: [RelationshipType], completion: @escaping Completion<[AppleMusicSong]>) {
         getSongs(withIDs: songs.map { $0.id }, includeTypes: types, completion: completion)
+    }
+    
+    /// - parameter ids: maximum 300 songs accepted
+    @available(iOS 13.0, watchOS 6.0, tvOS 13.0, macOS 10.15, *)
+    public func getMultipleSongDetails(for songs: [AppleMusicSong], types: [RelationshipType]) async throws -> [AppleMusicSong] {
+        return try await getSongs(withIDs: songs.map { $0.id }, includeTypes: types)
     }
     
     
@@ -210,9 +279,24 @@ public class AppleMusicClient {
         }
     }
     
+    @available(iOS 13.0, watchOS 6.0, tvOS 13.0, macOS 10.15, *)
+    public func getAlbum(withID id: String, includeTypes: [RelationshipType] = []) async throws -> AppleMusicAlbum {
+        return try await withCheckedThrowingContinuation { continuation in
+            getAlbum(withID: id, includeTypes: includeTypes) { result in
+                continuation.resume(with: result)
+            }
+        }
+    }
+    
     /// load missing relationship data
     public func getAlbumDetails(for album: AppleMusicAlbum, types: [RelationshipType], completion: @escaping Completion<AppleMusicAlbum>) {
         getAlbum(withID: album.id, includeTypes: types, completion: completion)
+    }
+    
+    /// load missing relationship data
+    @available(iOS 13.0, watchOS 6.0, tvOS 13.0, macOS 10.15, *)
+    public func getAlbumDetails(for album: AppleMusicAlbum, types: [RelationshipType]) async throws -> AppleMusicAlbum {
+        return try await getAlbum(withID: album.id, includeTypes: types)
     }
     
     public func getAlbumTracks(forID id: String, limit: Int = 50, offset: Int = 0, includeTypes: [RelationshipType] = [], completion: @escaping Completion<AppleMusicDataResponse<AppleMusicSong>>) {
@@ -226,8 +310,22 @@ public class AppleMusicClient {
         ], completion: completion)
     }
     
+    @available(iOS 13.0, watchOS 6.0, tvOS 13.0, macOS 10.15, *)
+    public func getAlbumTracks(forID id: String, limit: Int = 50, offset: Int = 0, includeTypes: [RelationshipType] = []) async throws -> AppleMusicDataResponse<AppleMusicSong> {
+        return try await withCheckedThrowingContinuation { continuation in
+            getAlbumTracks(forID: id, limit: limit, offset: offset, includeTypes: includeTypes) { result in
+                continuation.resume(with: result)
+            }
+        }
+    }
+    
     public func getAlbumTracks(for album: AppleMusicAlbum, limit: Int = 50, offset: Int = 0, includeTypes: [RelationshipType] = [], completion: @escaping Completion<AppleMusicDataResponse<AppleMusicSong>>) {
         getAlbumTracks(forID: album.id, limit: limit, offset: offset, includeTypes: includeTypes, completion: completion)
+    }
+    
+    @available(iOS 13.0, watchOS 6.0, tvOS 13.0, macOS 10.15, *)
+    public func getAlbumTracks(for album: AppleMusicAlbum, limit: Int = 50, offset: Int = 0, includeTypes: [RelationshipType] = []) async throws -> AppleMusicDataResponse<AppleMusicSong> {
+        try await getAlbumTracks(forID: album.id, limit: limit, offset: offset, includeTypes: includeTypes)
     }
     
     
@@ -243,6 +341,15 @@ public class AppleMusicClient {
         ], completion: completion)
     }
     
+    @available(iOS 13.0, watchOS 6.0, tvOS 13.0, macOS 10.15, *)
+    public func getArtists(forIDs ids: [String], includes: [RelationshipType] = []) async throws -> AppleMusicDataResponse<AppleMusicArtist> {
+        return try await withCheckedThrowingContinuation { continuation in
+            getArtists(forIDs: ids, includes: includes) { result in
+                continuation.resume(with: result)
+            }
+        }
+    }
+    
     public func getArtistRelationship<T: Decodable>(_ relationship: RelationshipType, forID id: String, includes: [RelationshipType] = [], limit: Int = 10, offset: Int = 0, completion: @escaping Completion<AppleMusicDataResponse<T>>) {
         
         let encodedIncludes = includes.map { $0.rawValue }.joined(separator: ",")
@@ -254,6 +361,15 @@ public class AppleMusicClient {
         ], completion: completion)
     }
     
+    @available(iOS 13.0, watchOS 6.0, tvOS 13.0, macOS 10.15, *)
+    public func getArtistRelationship<T: Decodable>(_ relationship: RelationshipType, forID id: String, includes: [RelationshipType] = [], limit: Int = 10, offset: Int = 0) async throws -> AppleMusicDataResponse<T> {
+        return try await withCheckedThrowingContinuation { continuation in
+            getArtistRelationship(relationship, forID: id, includes: includes, limit: limit, offset: offset) { result in
+                continuation.resume(with: result)
+            }
+        }
+    }
+    
     /*public func getArtistRelationship(_ relationship: RelationshipType, for artist: AppleMusicArtist, limit: Int = 10, completion: @escaping Completion<[AppleMusicArtist]>) {
         getArtistRelationship(relationship, forID: artist.id, limit: limit, completion: completion)
     }*/
@@ -262,8 +378,18 @@ public class AppleMusicClient {
         getArtistRelationship(.songs, forID: artist.id, includes: includes, limit: limit, offset: offset, completion: completion)
     }
     
+    @available(iOS 13.0, watchOS 6.0, tvOS 13.0, macOS 10.15, *)
+    public func getSongs(for artist: AppleMusicArtist, limit: Int = 10, offset: Int = 0, includes: [RelationshipType] = []) async throws -> AppleMusicDataResponse<AppleMusicSong> {
+        try await getArtistRelationship(.songs, forID: artist.id, includes: includes, limit: limit, offset: offset)
+    }
+    
     public func getAlbums(for artist: AppleMusicArtist, limit: Int = 10, offset: Int = 0, includes: [RelationshipType] = [], completion: @escaping Completion<AppleMusicDataResponse<AppleMusicAlbum>>) {
         getArtistRelationship(.albums, forID: artist.id, includes: includes, limit: limit, offset: offset, completion: completion)
+    }
+    
+    @available(iOS 13.0, watchOS 6.0, tvOS 13.0, macOS 10.15, *)
+    public func getAlbums(for artist: AppleMusicArtist, limit: Int = 10, offset: Int = 0, includes: [RelationshipType] = []) async throws -> AppleMusicDataResponse<AppleMusicAlbum> {
+        try await getArtistRelationship(.albums, forID: artist.id, includes: includes, limit: limit, offset: offset)
     }
     
     
@@ -286,6 +412,15 @@ public class AppleMusicClient {
         }
     }
     
+    @available(iOS 13.0, watchOS 6.0, tvOS 13.0, macOS 10.15, *)
+    public func getPlaylist(withID id: String, includeTypes: [RelationshipType] = []) async throws -> AppleMusicPlaylist {
+        return try await withCheckedThrowingContinuation { continuation in
+            getPlaylist(withID: id, includeTypes: includeTypes) { result in
+                continuation.resume(with: result)
+            }
+        }
+    }
+    
     public func getPlaylistRelationship<T: Decodable>(_ relationship: RelationshipType, forID id: String, includes: [RelationshipType] = [], limit: Int = 10, offset: Int = 0, completion: @escaping Completion<AppleMusicDataResponse<T>>) {
         
         let encodedIncludes = includes.map { $0.rawValue }.joined(separator: ",")
@@ -297,12 +432,31 @@ public class AppleMusicClient {
         ], completion: completion)
     }
     
+    @available(iOS 13.0, watchOS 6.0, tvOS 13.0, macOS 10.15, *)
+    public func getPlaylistRelationship<T: Decodable>(_ relationship: RelationshipType, forID id: String, includes: [RelationshipType] = [], limit: Int = 10, offset: Int = 0) async throws -> AppleMusicDataResponse<T> {
+        return try await withCheckedThrowingContinuation { continuation in
+            getPlaylistRelationship(relationship, forID: id, includes: includes, limit: limit, offset: offset) { result in
+                continuation.resume(with: result)
+            }
+        }
+    }
+    
     public func getPlaylistTracks(forID id: String, limit: Int = 100, offset: Int = 0, includes: [RelationshipType] = [], completion: @escaping Completion<AppleMusicDataResponse<AppleMusicSong>>) {
         getPlaylistRelationship(.tracks, forID: id, includes: includes, limit: limit, offset: offset, completion: completion)
     }
     
+    @available(iOS 13.0, watchOS 6.0, tvOS 13.0, macOS 10.15, *)
+    public func getPlaylistTracks(forID id: String, limit: Int = 100, offset: Int = 0, includes: [RelationshipType] = []) async throws -> AppleMusicDataResponse<AppleMusicSong> {
+        try await getPlaylistRelationship(.tracks, forID: id, includes: includes, limit: limit, offset: offset)
+    }
+    
     public func getPlaylistTracks(for playlist: AppleMusicPlaylist, limit: Int = 100, offset: Int = 0, includes: [RelationshipType] = [], completion: @escaping Completion<AppleMusicDataResponse<AppleMusicSong>>) {
         getPlaylistTracks(forID: playlist.id, limit: limit, offset: offset, includes: includes, completion: completion)
+    }
+    
+    @available(iOS 13.0, watchOS 6.0, tvOS 13.0, macOS 10.15, *)
+    public func getPlaylistTracks(for playlist: AppleMusicPlaylist, limit: Int = 100, offset: Int = 0, includes: [RelationshipType] = []) async throws -> AppleMusicDataResponse<AppleMusicSong> {
+        try await getPlaylistTracks(forID: playlist.id, limit: limit, offset: offset, includes: includes)
     }
     
     
