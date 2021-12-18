@@ -299,6 +299,29 @@ public class AppleMusicClient {
         return try await getAlbum(withID: album.id, includeTypes: types)
     }
     
+    /// - parameter ids: maximum 100 ids accepted
+    public func getAlbums(withIDs ids: [String], includeTypes: [RelationshipType] = [], completion: @escaping Completion<[AppleMusicAlbum]>) {
+        
+        let encodedIncludeTypes = includeTypes.map { $0.rawValue }.joined(separator: ",")
+        
+        getDecodable(AppleMusicDataResponse<AppleMusicAlbum>.self, path: "/catalog/\(storefront.rawValue)/albums", query: [
+            URLQueryItem(name: "ids", value: ids.joined(separator: ",")),
+            URLQueryItem(name: "include", value: encodedIncludeTypes)
+        ]) { result in
+            completion(result.map { $0.data })
+        }
+    }
+    
+    /// - parameter ids: maximum 100 ids accepted
+    @available(iOS 13.0, watchOS 6.0, tvOS 13.0, macOS 10.15, *)
+    public func getAlbums(withIDs ids: [String], includeTypes: [RelationshipType] = []) async throws -> [AppleMusicAlbum] {
+        return try await withCheckedThrowingContinuation { continuation in
+            getAlbums(withIDs: ids, includeTypes: includeTypes) { result in
+                continuation.resume(with: result)
+            }
+        }
+    }
+    
     public func getAlbumTracks(forID id: String, limit: Int = 50, offset: Int = 0, includeTypes: [RelationshipType] = [], completion: @escaping Completion<AppleMusicDataResponse<AppleMusicSong>>) {
         
         let encodedIncludeTypes = includeTypes.map { $0.rawValue }.joined(separator: ",")
@@ -331,6 +354,7 @@ public class AppleMusicClient {
     
     // MARK: - Artist
     
+    /// - parameter ids: maximum 25 ids accepted
     public func getArtists(forIDs ids: [String], includes: [RelationshipType] = [], completion: @escaping Completion<AppleMusicDataResponse<AppleMusicArtist>>) {
         
         let encodedIncludes = includes.map { $0.rawValue }.joined(separator: ",")
@@ -341,6 +365,7 @@ public class AppleMusicClient {
         ], completion: completion)
     }
     
+    /// - parameter ids: maximum 25 ids accepted
     @available(iOS 13.0, watchOS 6.0, tvOS 13.0, macOS 10.15, *)
     public func getArtists(forIDs ids: [String], includes: [RelationshipType] = []) async throws -> AppleMusicDataResponse<AppleMusicArtist> {
         return try await withCheckedThrowingContinuation { continuation in
