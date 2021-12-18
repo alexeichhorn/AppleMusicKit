@@ -227,6 +227,7 @@ public class AppleMusicClient {
     
     /// - parameter ids: maximum 300 ids accepted
     public func getSongs(withIDs ids: [String], includeTypes: [RelationshipType] = [], completion: @escaping Completion<[AppleMusicSong]>) {
+        assert(ids.count <= 300, "Only 300 ids accepted")
         
         let encodedIncludeTypes = includeTypes.map { $0.rawValue }.joined(separator: ",")
         
@@ -251,6 +252,7 @@ public class AppleMusicClient {
     
     /// - parameter ids: maximum 300 songs accepted
     public func getMultipleSongDetails(for songs: [AppleMusicSong], types: [RelationshipType], completion: @escaping Completion<[AppleMusicSong]>) {
+        assert(songs.count <= 50, "Only 50 songs accepted")
         getSongs(withIDs: songs.map { $0.id }, includeTypes: types, completion: completion)
     }
     
@@ -301,6 +303,7 @@ public class AppleMusicClient {
     
     /// - parameter ids: maximum 100 ids accepted
     public func getAlbums(withIDs ids: [String], includeTypes: [RelationshipType] = [], completion: @escaping Completion<[AppleMusicAlbum]>) {
+        assert(ids.count <= 100, "Only 100 ids accepted")
         
         let encodedIncludeTypes = includeTypes.map { $0.rawValue }.joined(separator: ",")
         
@@ -356,6 +359,7 @@ public class AppleMusicClient {
     
     /// - parameter ids: maximum 25 ids accepted
     public func getArtists(forIDs ids: [String], includes: [RelationshipType] = [], completion: @escaping Completion<AppleMusicDataResponse<AppleMusicArtist>>) {
+        assert(ids.count <= 25, "Only 25 ids accepted")
         
         let encodedIncludes = includes.map { $0.rawValue }.joined(separator: ",")
         
