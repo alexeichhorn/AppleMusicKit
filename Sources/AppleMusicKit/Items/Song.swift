@@ -25,7 +25,7 @@ public struct AppleMusicSong: Decodable {
         public let genreNames: [String]
         public let isrc: String
         public let name: String
-        public let releaseDate: String
+        public let releaseDate: String?
         public let trackNumber: Int
         
         // classical music only
