@@ -36,7 +36,7 @@ public struct AppleMusicSong: Decodable {
     }
     
     public struct Relationships: Decodable {
-        public let albums: AppleMusicDataResponse<AppleMusicAlbum>
+        public let albums: AppleMusicDataResponse<AppleMusicAlbum>?
         public let artists: AppleMusicDataResponse<AppleMusicArtist>
         public let genres: AppleMusicDataResponse<AppleMusicGenre>?
     }
