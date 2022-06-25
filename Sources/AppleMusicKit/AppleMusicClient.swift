@@ -421,6 +421,18 @@ public class AppleMusicClient {
         try await getArtistRelationship(.albums, forID: artist.id, includes: includes, limit: limit, offset: offset)
     }
     
+    @available(iOS 13.0, watchOS 6.0, tvOS 13.0, macOS 10.15, *)
+    public func getArtistView<ArtistView: AppleMusicArtistView>(_ viewType: ArtistView.Type, forID id: String, limit: Int = 10) async throws -> ArtistView {
+        try await getDecodable(ArtistView.self, path: "/catalog/\(storefront.rawValue)/artists/\(id)/view/\(viewType.viewIdentifier)", query: [
+            URLQueryItem(name: "limit", value: "\(limit)")
+        ])
+    }
+    
+    @available(iOS 13.0, watchOS 6.0, tvOS 13.0, macOS 10.15, *)
+    public func getArtistView<ArtistView: AppleMusicArtistView>(_ viewType: ArtistView.Type, for artist: AppleMusicArtist, limit: Int = 10) async throws -> ArtistView {
+        try await getArtistView(viewType, forID: artist.id, limit: limit)
+    }
+    
     
     // MARK: - Playlist
     
