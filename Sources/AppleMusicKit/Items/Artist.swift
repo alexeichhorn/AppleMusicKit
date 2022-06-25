@@ -1,6 +1,6 @@
 //
-//  File.swift
-//  
+//  Artist.swift
+//  AppleMusicKit
 //
 //  Created by Alexander Eichhorn on 02.05.20.
 //
@@ -14,6 +14,7 @@ public struct AppleMusicArtist: Decodable {
     
     
     public struct Attributes: Decodable {
+        public let artwork: AppleMusicArtwork?
         public let editorialNotes: AppleMusicEditorialNotes?
         public let genreNames: [String]
         public let name: String
@@ -24,17 +25,4 @@ public struct AppleMusicArtist: Decodable {
         public let genres: AppleMusicDataResponse<AppleMusicGenre>?
         public let station: AppleMusicDataResponse<AppleMusicStation>?
     }
-}
-
-extension AppleMusicArtist {
-    
-    /// returns nil if station realationship isn't loaded
-    public var artwork: AppleMusicArtwork? {
-        guard var stationArtwork = relationships?.station?.data.first?.attributes?.artwork else { return nil }
-        let parts = stationArtwork.url.components(separatedBy: "{w}x{h}")
-        guard parts.count == 2 else { return nil }
-        stationArtwork.url = parts[0] + "{w}x{h}." + (parts[1].components(separatedBy: ".").last ?? "")
-        return stationArtwork
-    }
-    
 }
