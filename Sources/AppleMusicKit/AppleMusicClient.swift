@@ -412,6 +412,15 @@ public class AppleMusicClient {
         try await getArtistRelationship(.songs, forID: artist.id, includes: includes, limit: limit, offset: offset)
     }
     
+    public func getAlbums(forArtistID identifier: String, limit: Int = 10, offset: Int = 0, includes: [RelationshipType] = [], completion: @escaping Completion<AppleMusicDataResponse<AppleMusicAlbum>>) {
+        getArtistRelationship(.albums, forID: identifier, includes: includes, limit: limit, offset: offset, completion: completion)
+    }
+    
+    @available(iOS 13.0, watchOS 6.0, tvOS 13.0, macOS 10.15, *)
+    public func getAlbums(forArtistID identifier: String, limit: Int = 10, offset: Int = 0, includes: [RelationshipType] = []) async throws -> AppleMusicDataResponse<AppleMusicAlbum> {
+        try await getArtistRelationship(.albums, forID: identifier, includes: includes, limit: limit, offset: offset)
+    }
+    
     public func getAlbums(for artist: AppleMusicArtist, limit: Int = 10, offset: Int = 0, includes: [RelationshipType] = [], completion: @escaping Completion<AppleMusicDataResponse<AppleMusicAlbum>>) {
         getArtistRelationship(.albums, forID: artist.id, includes: includes, limit: limit, offset: offset, completion: completion)
     }
