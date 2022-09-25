@@ -325,6 +325,22 @@ public class AppleMusicClient {
         }
     }
     
+    @available(iOS 13.0, watchOS 6.0, tvOS 13.0, macOS 10.15, *)
+    public func getAlbum(withUPC upc: String, includeTypes: [RelationshipType] = []) async throws -> AppleMusicAlbum {
+        
+        let encodedIncludeTypes = includeTypes.map { $0.rawValue }.joined(separator: ",")
+        
+        let result = try await getDecodable(AppleMusicDataResponse<AppleMusicAlbum>.self, path: "/catalog/\(storefront.rawValue)/albums", query: [
+            URLQueryItem(name: "include", value: encodedIncludeTypes),
+            URLQueryItem(name: "filter[upc]", value: upc)
+        ])
+        
+        guard let album = result.data.first else {
+            throw RequestError.notFound
+        }
+        return album
+    }
+    
     public func getAlbumTracks(forID id: String, limit: Int = 50, offset: Int = 0, includeTypes: [RelationshipType] = [], completion: @escaping Completion<AppleMusicDataResponse<AppleMusicSong>>) {
         
         let encodedIncludeTypes = includeTypes.map { $0.rawValue }.joined(separator: ",")
