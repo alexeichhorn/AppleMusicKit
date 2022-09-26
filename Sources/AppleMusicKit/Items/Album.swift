@@ -7,13 +7,13 @@
 
 import Foundation
 
-public struct AppleMusicAlbum: Decodable {
+public struct AppleMusicAlbum: Codable {
     public let id: String
     public let attributes: Attributes?
     public let relationships: Relationships?
     
     
-    public struct Attributes: Decodable {
+    public struct Attributes: Codable {
         public let artistName: String
         public let artwork: AppleMusicArtwork?
         public let contentRating: AppleMusicContentRating?
@@ -29,7 +29,7 @@ public struct AppleMusicAlbum: Decodable {
         public let upc: String?
     }
     
-    public struct Relationships: Decodable {
+    public struct Relationships: Codable {
         public let artists: AppleMusicDataResponse<AppleMusicArtist>?
         public let genres: AppleMusicDataResponse<AppleMusicGenre>?
         public let tracks: AppleMusicDataResponse<AppleMusicSong>? // can also be of type music video

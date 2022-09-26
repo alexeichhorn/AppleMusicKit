@@ -7,20 +7,20 @@
 
 import Foundation
 
-public struct AppleMusicArtist: Decodable {
+public struct AppleMusicArtist: Codable {
     public let id: String
     public let attributes: Attributes?
     public let relationships: Relationships?
     
     
-    public struct Attributes: Decodable {
+    public struct Attributes: Codable {
         public let artwork: AppleMusicArtwork?
         public let editorialNotes: AppleMusicEditorialNotes?
         public let genreNames: [String]
         public let name: String
     }
     
-    public struct Relationships: Decodable {
+    public struct Relationships: Codable {
         public let albums: AppleMusicDataResponse<AppleMusicAlbum>?
         public let genres: AppleMusicDataResponse<AppleMusicGenre>?
         public let station: AppleMusicDataResponse<AppleMusicStation>?

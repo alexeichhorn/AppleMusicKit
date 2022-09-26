@@ -7,10 +7,10 @@
 
 import Foundation
 
-public struct AppleMusicStation: Decodable {
+public struct AppleMusicStation: Codable {
     public let attributes: Attributes?
     
-    public struct Attributes: Decodable {
+    public struct Attributes: Codable {
         public let artwork: AppleMusicArtwork
         public let durationInMillis: Double?
         public let isLive: Bool

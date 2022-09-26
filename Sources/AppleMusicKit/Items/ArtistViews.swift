@@ -7,7 +7,7 @@
 
 import Foundation
 
-public protocol AppleMusicArtistView: Decodable {
+public protocol AppleMusicArtistView: Codable {
     static var viewIdentifier: String { get }
     
     var next: String? { get }
@@ -22,7 +22,7 @@ public struct AppleMusicArtistViewSimilarArtists: AppleMusicArtistView {
     public let attributes: Attributes?
     public let data: [AppleMusicArtist]
     
-    public struct Attributes: Decodable {
+    public struct Attributes: Codable {
         public let title: String
     }
 }

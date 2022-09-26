@@ -29,7 +29,7 @@ public struct AppleMusicSearchHints: Decodable {
     public let terms: [String]
 }
 
-public struct AppleMusicDataResponse<T: Decodable>: Decodable {
+public struct AppleMusicDataResponse<T: Codable>: Codable {
     public let data: [T]
     public let next: String?
 }
