@@ -28,7 +28,7 @@ public struct AppleMusicPlaylist: Codable, Sendable {
         public let tracks: AppleMusicDataResponse<AppleMusicSong>? // can also be of type music video
     }
     
-    public enum PlaylistType: String, Codable {
+    public enum PlaylistType: String, Codable, Sendable {
         
         /// A playlist created by an Apple Music curator.
         case editorial

@@ -7,11 +7,11 @@
 
 import Foundation
 
-struct AppleMusicSearchResponse: Decodable {
+struct AppleMusicSearchResponse: Decodable, Sendable {
     let results: AppleMusicSearchResult
 }
 
-public struct AppleMusicSearchResult: Decodable {
+public struct AppleMusicSearchResult: Decodable, Sendable {
     //public let activities: [ActivityResponse]
     public let albums: AppleMusicDataResponse<AppleMusicAlbum>?
     public let artists: AppleMusicDataResponse<AppleMusicArtist>?
@@ -33,3 +33,5 @@ public struct AppleMusicDataResponse<T: Codable>: Codable {
     public let data: [T]
     public let next: String?
 }
+
+extension AppleMusicDataResponse: Sendable where T: Sendable {}

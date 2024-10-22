@@ -7,11 +7,11 @@
 
 import Foundation
 
-public struct AppleMusicGenre: Codable {
+public struct AppleMusicGenre: Codable, Sendable {
     public let attributes: Attributes?
     
     
-    public struct Attributes: Codable {
+    public struct Attributes: Codable, Sendable {
         
     }
 }

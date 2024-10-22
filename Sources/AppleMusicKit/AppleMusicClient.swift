@@ -9,7 +9,7 @@ import Foundation
 
 public class AppleMusicClient {
     
-    public typealias TokenHandler = (@escaping (Result<(String, Int), Error>) -> Void) -> Void
+    public typealias TokenHandler = (@escaping @Sendable (Result<(String, Int), Error>) -> Void) -> Void
     
     let tokenHandler: TokenHandler
     
