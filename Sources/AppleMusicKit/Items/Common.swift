@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct AppleMusicArtwork: Codable {
+public struct AppleMusicArtwork: Codable, Sendable {
     public let height: Int
     public let width: Int
     public let bgColor: String?
@@ -19,21 +19,21 @@ public struct AppleMusicArtwork: Codable {
 }
 
 
-public struct AppleMusicEditorialNotes: Codable {
+public struct AppleMusicEditorialNotes: Codable, Sendable {
     
 }
 
-public struct AppleMusicDescriptionAttribute: Codable {
+public struct AppleMusicDescriptionAttribute: Codable, Sendable {
     public let short: String?
     public let standard: String
 }
 
-public enum AppleMusicContentRating: String, Codable {
+public enum AppleMusicContentRating: String, Codable, Sendable {
     case clean
     case explicit
 }
 
-public enum AppleMusicTrackTypes: String, Codable {
+public enum AppleMusicTrackTypes: String, Codable, Sendable {
     case musicVideos = "music-videos"
     case songs
 }

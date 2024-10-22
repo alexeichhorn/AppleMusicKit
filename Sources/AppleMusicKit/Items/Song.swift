@@ -1,19 +1,19 @@
 //
-//  File.swift
-//  
+//  Song.swift
+//  AppleMusicKit
 //
 //  Created by Alexander Eichhorn on 02.05.20.
 //
 
 import Foundation
 
-public struct AppleMusicSong: Codable {
+public struct AppleMusicSong: Codable, Sendable {
     public let id: String
     public let attributes: Attributes?
     public let relationships: Relationships?
     
     
-    public struct Attributes: Codable {
+    public struct Attributes: Codable, Sendable {
         public let albumName: String
         public let artistName: String
         public let artwork: AppleMusicArtwork
@@ -35,7 +35,7 @@ public struct AppleMusicSong: Codable {
         public let workName: String?
     }
     
-    public struct Relationships: Codable {
+    public struct Relationships: Codable, Sendable {
         public let albums: AppleMusicDataResponse<AppleMusicAlbum>?
         public let artists: AppleMusicDataResponse<AppleMusicArtist>
         public let genres: AppleMusicDataResponse<AppleMusicGenre>?
