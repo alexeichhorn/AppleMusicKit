@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class AppleMusicClient {
+public actor AppleMusicClient {
     
     public typealias TokenHandler = (@escaping @Sendable (Result<(String, Int), Error>) -> Void) -> Void
     
@@ -29,24 +29,36 @@ public class AppleMusicClient {
         case unknown
     }
     
-    public typealias Completion<T> = (Result<T, Error>) -> Void
+    public typealias Completion<T> = @Sendable (Result<T, Error>) -> Void
     
     private func authenticationHeader(for token: String) -> [String: String] {
         ["Authorization": "Bearer \(token)"]
     }
     
-    private func authenticationHeader(_ completion: @escaping Completion<[String: String]>) {
+    private func getAuthenticationHeader() async throws -> [String: String] {
         
-        if let token = token {
-            completion(.success(authenticationHeader(for: token)))
-            return
+        if let token {
+            return authenticationHeader(for: token)
         }
         
-        tokenHandler { result in
-            completion(result.map { token, expiresIn in
-                self._token.set(token, duration: TimeInterval(expiresIn))
-                return self.authenticationHeader(for: token)
-            })
+        let (token, expiresIn) = try await withCheckedThrowingContinuation { continuation in
+            tokenHandler { result in
+                continuation.resume(with: result)
+            }
+        }
+        
+        self._token.set(token, duration: TimeInterval(expiresIn))
+        return authenticationHeader(for: token)
+    }
+    
+    private func authenticationHeader(_ completion: @escaping Completion<[String: String]>) {
+        Task {
+            do {
+                let header = try await getAuthenticationHeader()
+                completion(.success(header))
+            } catch let error {
+                completion(.failure(error))
+            }
         }
     }
     
@@ -59,10 +71,10 @@ public class AppleMusicClient {
     }
     
     private func get(path: String, query: [URLQueryItem], completion: @escaping Completion<Data>) {
-        
-        authenticationHeader { result in
-            switch result {
-            case .success(let header):
+        Task {
+            do {
+                let header = try await getAuthenticationHeader()
+                
                 let url = self.url(forPath: path, query: query)
                 var request = URLRequest(url: url)
                 request.allHTTPHeaderFields = header
@@ -80,8 +92,8 @@ public class AppleMusicClient {
                     
                     completion(.failure(RequestError.unknown))
                 }.resume()
-            
-            case .failure(let error):
+                
+            } catch let error {
                 completion(.failure(error))
             }
         }
@@ -102,7 +114,7 @@ public class AppleMusicClient {
     }
     
     @available(iOS 13.0, watchOS 6.0, tvOS 13.0, macOS 10.15, *)
-    private func getDecodable<T: Decodable>(_ type: T.Type, path: String, query: [URLQueryItem]) async throws -> T {
+    private func getDecodable<T: Decodable & Sendable>(_ type: T.Type, path: String, query: [URLQueryItem]) async throws -> T {
         try await withCheckedThrowingContinuation { continuation in
             getDecodable(type, path: path, query: query) { result in
                 continuation.resume(with: result)
@@ -407,7 +419,7 @@ public class AppleMusicClient {
     }
     
     @available(iOS 13.0, watchOS 6.0, tvOS 13.0, macOS 10.15, *)
-    public func getArtistRelationship<T: Decodable>(_ relationship: RelationshipType, forID id: String, includes: [RelationshipType] = [], limit: Int = 10, offset: Int = 0) async throws -> AppleMusicDataResponse<T> {
+    public func getArtistRelationship<T: Decodable & Sendable>(_ relationship: RelationshipType, forID id: String, includes: [RelationshipType] = [], limit: Int = 10, offset: Int = 0) async throws -> AppleMusicDataResponse<T> {
         return try await withCheckedThrowingContinuation { continuation in
             getArtistRelationship(relationship, forID: id, includes: includes, limit: limit, offset: offset) { result in
                 continuation.resume(with: result)
@@ -499,7 +511,7 @@ public class AppleMusicClient {
     }
     
     @available(iOS 13.0, watchOS 6.0, tvOS 13.0, macOS 10.15, *)
-    public func getPlaylistRelationship<T: Decodable>(_ relationship: RelationshipType, forID id: String, includes: [RelationshipType] = [], limit: Int = 10, offset: Int = 0) async throws -> AppleMusicDataResponse<T> {
+    public func getPlaylistRelationship<T: Decodable & Sendable>(_ relationship: RelationshipType, forID id: String, includes: [RelationshipType] = [], limit: Int = 10, offset: Int = 0) async throws -> AppleMusicDataResponse<T> {
         return try await withCheckedThrowingContinuation { continuation in
             getPlaylistRelationship(relationship, forID: id, includes: includes, limit: limit, offset: offset) { result in
                 continuation.resume(with: result)
@@ -535,7 +547,7 @@ public class AppleMusicClient {
         case playlists
     }
     
-    public enum RelationshipType: String {
+    public enum RelationshipType: String, Sendable {
         case songs
         case albums
         case artists

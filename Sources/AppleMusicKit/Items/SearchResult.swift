@@ -21,11 +21,11 @@ public struct AppleMusicSearchResult: Decodable, Sendable {
     //public let stations: [StationResponse]
 }
 
-struct AppleMusicSearchHintsResponse: Decodable {
+struct AppleMusicSearchHintsResponse: Decodable, Sendable {
     let results: AppleMusicSearchHints
 }
 
-public struct AppleMusicSearchHints: Decodable {
+public struct AppleMusicSearchHints: Decodable, Sendable {
     public let terms: [String]
 }
 
