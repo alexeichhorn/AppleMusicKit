@@ -19,14 +19,14 @@ public struct AppleMusicSong: Codable, Sendable {
         public let artwork: AppleMusicArtwork
         public let composerName: String?
         public let contentRating: AppleMusicContentRating?
-        public let discNumber: Int
         public let durationInMillis: Double?
         public let editorialNotes: AppleMusicEditorialNotes?
         public let genreNames: [String]
         public let isrc: String
         public let name: String
         public let releaseDate: String?
-        public let trackNumber: Int
+        public let discNumber: Int?
+        public let trackNumber: Int?
         
         // classical music only
         public let movementCount: Int?
