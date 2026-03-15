@@ -459,15 +459,18 @@ public actor AppleMusicClient {
     }
     
     @available(iOS 13.0, watchOS 6.0, tvOS 13.0, macOS 10.15, *)
-    public func getArtistView<ArtistView: AppleMusicArtistView>(_ viewType: ArtistView.Type, forID id: String, limit: Int = 10) async throws -> ArtistView {
-        try await getDecodable(ArtistView.self, path: "/catalog/\(storefront.rawValue)/artists/\(id)/view/\(viewType.viewIdentifier)", query: [
-            URLQueryItem(name: "limit", value: "\(limit)")
+    public func getArtistView<ArtistView: AppleMusicArtistView>(_ viewType: ArtistView.Type, forID id: String, includes: [RelationshipType] = [], limit: Int = 10) async throws -> ArtistView {
+        let encodedIncludes = includes.map { $0.rawValue }.joined(separator: ",")
+        
+        return try await getDecodable(ArtistView.self, path: "/catalog/\(storefront.rawValue)/artists/\(id)/view/\(viewType.viewIdentifier)", query: [
+            URLQueryItem(name: "limit", value: "\(limit)"),
+            URLQueryItem(name: "include", value: encodedIncludes)
         ])
     }
     
     @available(iOS 13.0, watchOS 6.0, tvOS 13.0, macOS 10.15, *)
-    public func getArtistView<ArtistView: AppleMusicArtistView>(_ viewType: ArtistView.Type, for artist: AppleMusicArtist, limit: Int = 10) async throws -> ArtistView {
-        try await getArtistView(viewType, forID: artist.id, limit: limit)
+    public func getArtistView<ArtistView: AppleMusicArtistView>(_ viewType: ArtistView.Type, for artist: AppleMusicArtist, includes: [RelationshipType] = [], limit: Int = 10) async throws -> ArtistView {
+        try await getArtistView(viewType, forID: artist.id, includes: includes, limit: limit)
     }
     
     
