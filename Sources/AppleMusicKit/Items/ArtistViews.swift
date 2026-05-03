@@ -59,7 +59,7 @@ public struct AppleMusicArtistViewFeaturedPlaylists: AppleMusicArtistView {
 
 
 /// A relationship view from this artist to full-release albums associated with the artist.
-public struct AppleMusicArtistViewFullAlbumsView {
+public struct AppleMusicArtistViewFullAlbumsView: AppleMusicArtistView {
     
     static public let viewIdentifier = "full-albums"
     
