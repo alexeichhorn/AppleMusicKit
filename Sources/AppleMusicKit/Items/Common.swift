@@ -23,6 +23,22 @@ public struct AppleMusicEditorialNotes: Codable, Sendable {
     
 }
 
+public struct AppleMusicPlayParameters: Codable, Sendable {
+    public let id: String?
+    public let kind: String?
+    public let catalogId: String?
+    public let globalId: String?
+    public let purchasedId: String?
+    public let reportingId: String?
+    public let versionHash: String?
+    public let format: String?
+    public let stationHash: String?
+    public let isLibrary: Bool?
+    public let reporting: Bool?
+    public let hasDrm: Bool?
+    public let mediaType: Int?
+}
+
 public struct AppleMusicDescriptionAttribute: Codable, Sendable {
     public let short: String?
     public let standard: String

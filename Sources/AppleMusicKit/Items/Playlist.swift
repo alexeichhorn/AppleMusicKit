@@ -21,6 +21,7 @@ public struct AppleMusicPlaylist: Codable, Sendable {
         public let lastModifiedDate: String?
         public let name: String
         public let playlistType: PlaylistType
+        public let playParams: AppleMusicPlayParameters?
         public let trackTypes: [AppleMusicTrackTypes]?
     }
     

@@ -23,6 +23,7 @@ public struct AppleMusicAlbum: Codable, Sendable {
         public let isComplete: Bool
         public let isSingle: Bool
         public let name: String
+        public let playParams: AppleMusicPlayParameters?
         public let recordLabel: String?
         public let releaseDate: String
         public let trackCount: Int

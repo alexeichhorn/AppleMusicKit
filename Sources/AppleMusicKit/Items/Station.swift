@@ -15,5 +15,6 @@ public struct AppleMusicStation: Codable, Sendable {
         public let durationInMillis: Double?
         public let isLive: Bool
         public let name: String
+        public let playParams: AppleMusicPlayParameters?
     }
 }

@@ -24,6 +24,7 @@ public struct AppleMusicSong: Codable, Sendable {
         public let genreNames: [String]
         public let isrc: String
         public let name: String
+        public let playParams: AppleMusicPlayParameters?
         public let releaseDate: String?
         public let discNumber: Int?
         public let trackNumber: Int?
