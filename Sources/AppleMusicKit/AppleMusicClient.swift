@@ -203,15 +203,9 @@ public actor AppleMusicClient {
     }
     
     public func getSong(withISRC isrc: String, includeTypes: [RelationshipType] = [], completion: @escaping Completion<AppleMusicSong>) {
-        
-        let encodedIncludeTypes = includeTypes.map { $0.rawValue }.joined(separator: ",")
-        
-        getDecodable(AppleMusicDataResponse<AppleMusicSong>.self, path: "/catalog/\(storefront.rawValue)/songs", query: [
-            URLQueryItem(name: "include", value: encodedIncludeTypes),
-            URLQueryItem(name: "filter[isrc]", value: isrc)
-        ]) { result in
+        getAllSongs(withISRC: isrc, includeTypes: includeTypes) { result in
             completion(result.flatMap {
-                guard let song = $0.data.first else { return .failure(RequestError.notFound) }
+                guard let song = $0.first else { return .failure(RequestError.notFound) }
                 return .success(song)
             })
         }
@@ -221,6 +215,29 @@ public actor AppleMusicClient {
     public func getSong(withISRC isrc: String, includeTypes: [RelationshipType] = []) async throws -> AppleMusicSong {
         try await withCheckedThrowingContinuation { continuation in
             getSong(withISRC: isrc, includeTypes: includeTypes) { result in
+                continuation.resume(with: result)
+            }
+        }
+    }
+    
+    /// Returns all songs Apple Music provides for a single ISRC lookup.
+    /// A single ISRC can resolve to multiple catalog songs across releases.
+    public func getAllSongs(withISRC isrc: String, includeTypes: [RelationshipType] = [], completion: @escaping Completion<[AppleMusicSong]>) {
+        
+        let encodedIncludeTypes = includeTypes.map { $0.rawValue }.joined(separator: ",")
+        
+        getDecodable(AppleMusicDataResponse<AppleMusicSong>.self, path: "/catalog/\(storefront.rawValue)/songs", query: [
+            URLQueryItem(name: "include", value: encodedIncludeTypes),
+            URLQueryItem(name: "filter[isrc]", value: isrc)
+        ]) { result in
+            completion(result.map { $0.data })
+        }
+    }
+    
+    @available(iOS 13.0, watchOS 6.0, tvOS 13.0, macOS 10.15, *)
+    public func getAllSongs(withISRC isrc: String, includeTypes: [RelationshipType] = []) async throws -> [AppleMusicSong] {
+        try await withCheckedThrowingContinuation { continuation in
+            getAllSongs(withISRC: isrc, includeTypes: includeTypes) { result in
                 continuation.resume(with: result)
             }
         }
